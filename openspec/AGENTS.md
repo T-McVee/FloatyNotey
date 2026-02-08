@@ -48,16 +48,22 @@ Skip proposal for:
 
 ### Stage 2: Implementing Changes
 Track these steps as TODOs and complete them one by one.
-1. **Read proposal.md** - Understand what's being built
-2. **Read design.md** (if exists) - Review technical decisions
-3. **Read tasks.md** - Get implementation checklist
-4. **Implement tasks sequentially** - Complete in order
-5. **Confirm completion** - Ensure every item in `tasks.md` is finished before updating statuses
-6. **Update checklist** - After all work is done, set every task to `- [x]` so the list reflects reality
-7. **Approval gate** - Do not start implementation until the proposal is reviewed and approved
+1. **Approval gate** - Do not start implementation until the proposal is reviewed and approved
+2. **Read proposal.md** - Understand what's being built
+3. **Read design.md** (if exists) - Review technical decisions
+4. **Read tasks.md** - Get implementation checklist
+5. **Create beads for each task** - Create a bead (`bd create`) for every item in `tasks.md`. Each bead must:
+   - Reference the OpenSpec change ID (e.g., via label `openspec:<change-id>`)
+   - Reference the specific task number (e.g., via label `task:1.1`)
+   - Include enough context and acceptance criteria for independent execution
+   - Have dependencies mapped (`bd update <id> --blocked-by <dep-id>`)
+6. **Implement tasks sequentially** - Pick up beads in dependency order. Mark each bead as in-progress (`bd update <id> --status in_progress`) when starting
+7. **Update both tools on completion** - When a task is done, mark **both** the bead (`bd update <id> --status done`) and the `tasks.md` checkbox (`[x]`). Never mark one without the other
+8. **Confirm completion** - Ensure every item in `tasks.md` is checked off and every bead is marked done before proceeding to archival
 
 ### Stage 3: Archiving Changes
 After deployment, create separate PR to:
+- Verify all beads for this change are marked done (`bd list` and check statuses)
 - Move `changes/[name]/` → `changes/archive/YYYY-MM-DD-[name]/`
 - Update `specs/` if capabilities changed
 - Use `openspec archive <change-id> --skip-specs --yes` for tooling-only changes (always pass the change ID explicitly)
@@ -453,4 +459,13 @@ openspec validate --strict # Is it correct?
 openspec archive <change-id> [--yes|-y]  # Mark complete (add --yes for automation)
 ```
 
-Remember: Specs are truth. Changes are proposals. Keep them in sync.
+### Beads Integration
+```bash
+bd create "Task description" --label "openspec:<change-id>" --label "task:<number>"
+bd update <id> --status in_progress   # Starting work
+bd update <id> --status done           # Task complete
+bd update <id> --blocked-by <dep-id>   # Map dependencies
+bd list                                # Check statuses
+```
+
+Remember: Specs are truth. Changes are proposals. Beads track execution. Keep them all in sync.
