@@ -9,7 +9,16 @@
       "Bash(nvm ls:*)",
       "Bash(nvm use:*)",
       "Bash(npm run build:*)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(bd list:*)",
+      "Bash(npx next build:*)",
+      "Bash(npm run dev:*)",
+      "Bash(npx vitest:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nAdd multi-note editor with command palette and IndexedDB storage\n\nReplaces single-note localStorage with Dexie.js/IndexedDB multi-note\npersistence. Adds Raycast-style command palette \\(⌘K\\) for searching,\ncreating, deleting, and pinning notes. Includes history navigation\n\\(⌘[/⌘]\\), localStorage migration, offline-capable service worker,\nand Vitest unit tests.\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git commit:*)",
+      "Bash(ls:*)",
+      "Bash(npx tsc:*)"
     ]
   }
 }

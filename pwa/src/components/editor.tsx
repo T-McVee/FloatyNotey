@@ -11,6 +11,7 @@ import { createNote, getNote, updateNote, deleteNote } from "@/lib/notes";
 import { migrateIfNeeded } from "@/lib/migrate";
 import { pushHistory, goBack, goForward } from "@/lib/history";
 import CommandPalette from "./command-palette";
+import Toolbar from "./toolbar";
 
 const LAST_NOTE_KEY = "floatynotey:lastNote";
 const EMPTY_DOC = { type: "doc", content: [{ type: "paragraph" }] };
@@ -33,7 +34,7 @@ export default function Editor() {
     editorProps: {
       attributes: {
         class:
-          "prose prose-sm sm:prose dark:prose-invert max-w-none outline-none min-h-[calc(100vh-2rem)] p-4",
+          "prose prose-sm sm:prose dark:prose-invert max-w-none outline-none min-h-[calc(100vh-2rem)] p-4 pb-12",
       },
     },
     onUpdate: ({ editor }) => {
@@ -50,7 +51,9 @@ export default function Editor() {
 
   // Keep a ref to noteId so the onUpdate closure always has the latest
   const noteIdRef = useRef(noteId);
-  noteIdRef.current = noteId;
+  useEffect(() => {
+    noteIdRef.current = noteId;
+  }, [noteId]);
 
   // Load a note into the editor
   const loadNote = useCallback(
@@ -189,6 +192,7 @@ export default function Editor() {
 
   return (
     <>
+      {editor && <Toolbar editor={editor} />}
       <EditorContent editor={editor} />
       <CommandPalette
         open={paletteOpen}
