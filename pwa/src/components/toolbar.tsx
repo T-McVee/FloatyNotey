@@ -4,6 +4,7 @@ import type { Editor } from "@tiptap/react";
 
 interface ToolbarProps {
   editor: Editor;
+  onRequestLink?: (selection: { from: number; to: number }) => void;
 }
 
 function ToolbarButton({
@@ -33,7 +34,7 @@ function Divider() {
   return <span className="toolbar-divider" />;
 }
 
-export default function Toolbar({ editor }: ToolbarProps) {
+export default function Toolbar({ editor, onRequestLink }: ToolbarProps) {
   return (
     <div className="toolbar">
       <ToolbarButton
@@ -154,6 +155,27 @@ export default function Toolbar({ editor }: ToolbarProps) {
         <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
           <path d="M3 3C1.5 3 1 4 1 5.5S1.5 8 3 8C4.5 8 4.5 9.5 3 11H4.5C6.5 9.5 6.5 6 5 4.5C4.5 3.5 4 3 3 3Z" />
           <path d="M10 3C8.5 3 8 4 8 5.5S8.5 8 10 8C11.5 8 11.5 9.5 10 11H11.5C13.5 9.5 13.5 6 12 4.5C11.5 3.5 11 3 10 3Z" />
+        </svg>
+      </ToolbarButton>
+
+      <Divider />
+
+      <ToolbarButton
+        onClick={() => {
+          if (editor.isActive("link")) {
+            editor.chain().focus().unsetLink().run();
+          } else {
+            const { from, to } = editor.state.selection;
+            if (from === to) return; // No text selected
+            onRequestLink?.({ from, to });
+          }
+        }}
+        active={editor.isActive("link")}
+        title="Link"
+      >
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M6.5 9.5a3.5 3.5 0 0 0 5 0l2-2a3.5 3.5 0 0 0-5-5l-1 1" />
+          <path d="M9.5 6.5a3.5 3.5 0 0 0-5 0l-2 2a3.5 3.5 0 0 0 5 5l1-1" />
         </svg>
       </ToolbarButton>
     </div>

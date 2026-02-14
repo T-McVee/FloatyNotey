@@ -110,6 +110,12 @@ ul[data-type="taskList"] li > div > p {
   margin: 0 !important;
 }
 
+/* Links inside editor should look clickable */
+.ProseMirror a,
+.ProseMirror a * {
+  cursor: pointer !important;
+}
+
 .toolbar-divider {
   width: 1px;
   height: 16px;

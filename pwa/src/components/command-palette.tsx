@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
 import { listNotes } from "@/lib/notes";
 import { deriveTitle } from "@/lib/notes";
+import { buildNoteLink } from "@/lib/deep-link";
 import type { Note } from "@/lib/db";
 
 interface CommandPaletteProps {
@@ -38,13 +39,15 @@ export default function CommandPalette({
       )
     : notes;
 
-  // Items: notes + "New Note" action always at end
+  // Items: notes + actions at end
   type Item =
     | { kind: "note"; note: Note }
+    | { kind: "copy-link" }
     | { kind: "new" };
 
   const items: Item[] = [
     ...filtered.map((note) => ({ kind: "note" as const, note })),
+    ...(currentNoteId != null ? [{ kind: "copy-link" as const }] : []),
     { kind: "new" as const },
   ];
 
@@ -84,6 +87,11 @@ export default function CommandPalette({
           if (!item) break;
           if (item.kind === "new") {
             onNewNote();
+            onClose();
+          } else if (item.kind === "copy-link") {
+            if (currentNoteId != null) {
+              navigator.clipboard.writeText(buildNoteLink(currentNoteId));
+            }
             onClose();
           } else {
             onSelectNote(item.note.id);
@@ -147,6 +155,29 @@ export default function CommandPalette({
         <ul className="max-h-64 overflow-y-auto py-1">
           {items.map((item, i) => {
             const isSelected = i === selectedIndex;
+            if (item.kind === "copy-link") {
+              return (
+                <li
+                  key="__copy-link__"
+                  className={`flex cursor-pointer items-center gap-2 px-4 py-2 text-sm ${
+                    isSelected
+                      ? "bg-blue-500 text-white"
+                      : "text-neutral-500 dark:text-neutral-400"
+                  }`}
+                  onMouseEnter={() => setSelectedIndex(i)}
+                  onClick={() => {
+                    if (currentNoteId != null) {
+                      navigator.clipboard.writeText(buildNoteLink(currentNoteId));
+                    }
+                    onClose();
+                  }}
+                >
+                  <span>&#128279;</span>
+                  <span>Copy Link to Current Note</span>
+                </li>
+              );
+            }
+
             if (item.kind === "new") {
               return (
                 <li
