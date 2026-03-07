@@ -1,6 +1,6 @@
 ## 1. Setup
-- [ ] 1.1 Install `pocketbase` JS SDK
-- [ ] 1.2 Add environment variables (`NEXT_PUBLIC_PB_URL`, auth credentials)
+- [x] 1.1 Install `pocketbase` JS SDK
+- [x] 1.2 Add environment variables (`NEXT_PUBLIC_PB_URL`, auth credentials)
 - [ ] 1.3 Configure PocketBase `Notes` collection (manual — Content: JSON, IsPinned: Boolean, DeviceOrigin: Plain text, LocalId: Plain text, Modified: Date/time)
 
 ## 2. Schema Migration
