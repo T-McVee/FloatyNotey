@@ -9,8 +9,8 @@ interface PBNote {
   IsPinned: boolean;
   DeviceOrigin: string;
   LocalId: string;
-  Modified: string; // ISO 8601
   Deleted: boolean;
+  updated: string; // PocketBase built-in field
 }
 
 // --- Debounce map (per-note push timers) ---
@@ -34,7 +34,6 @@ async function doPush(note: Note): Promise<void> {
     IsPinned: note.pinned,
     DeviceOrigin: typeof location !== "undefined" ? location.hostname : "unknown",
     LocalId: String(note.id),
-    Modified: note.modified.toISOString(),
     Deleted: note.deleted,
   };
 
@@ -84,10 +83,10 @@ async function flushOfflineQueue(): Promise<void> {
 
 // --- Pull ---
 
-/** Apply a remote PB record to local Dexie using LWW on Modified. */
+/** Apply a remote PB record to local Dexie using LWW on updated timestamp. */
 async function applyRemote(remote: PBNote): Promise<void> {
   // PocketBase returns dates as "YYYY-MM-DD HH:mm:ss.SSSZ" — normalize to ISO 8601
-  const remoteModified = new Date(remote.Modified.replace(" ", "T"));
+  const remoteModified = new Date(remote.updated.replace(" ", "T"));
 
   // Find local note by remoteId, or by LocalId for unsynced local notes only
   let local = await db.notes.where("remoteId").equals(remote.id).first();

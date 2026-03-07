@@ -117,7 +117,7 @@ describe("initSync / pullFromRemote", () => {
         IsPinned: true,
         DeviceOrigin: "other",
         LocalId: "",
-        Modified: "2026-02-01T00:00:00.000Z",
+        updated: "2026-02-01T00:00:00.000Z",
         Deleted: false,
       },
     ]);
@@ -155,7 +155,7 @@ describe("initSync / pullFromRemote", () => {
         IsPinned: false,
         DeviceOrigin: "other",
         LocalId: String(id),
-        Modified: "2026-06-01T00:00:00.000Z", // newer
+        updated: "2026-06-01T00:00:00.000Z", // newer
         Deleted: false,
       },
     ]);
@@ -201,7 +201,7 @@ describe("initSync / pullFromRemote", () => {
         IsPinned: false,
         DeviceOrigin: "other",
         LocalId: String(id),
-        Modified: "2026-01-01T00:00:00.000Z", // older
+        updated: "2026-01-01T00:00:00.000Z", // older
         Deleted: false,
       },
     ]);
