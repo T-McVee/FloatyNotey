@@ -60,7 +60,8 @@ function LinkInput({
 }
 
 export default function Editor() {
-  const [authenticated, setAuthenticated] = useState(pb.authStore.isValid);
+  const [authChecked, setAuthChecked] = useState(false);
+  const [authenticated, setAuthenticated] = useState(false);
   const [ready, setReady] = useState(false);
   const [noteId, setNoteId] = useState<number | null>(null);
   const [paletteOpen, setPaletteOpen] = useState(false);
@@ -341,13 +342,17 @@ export default function Editor() {
     editor?.commands.focus();
   }, [editor]);
 
-  // Listen for auth store changes (e.g. token expiry)
+  // Check auth on mount (client-side only) and listen for changes
   useEffect(() => {
+    setAuthenticated(pb.authStore.isValid);
+    setAuthChecked(true);
     const unsubscribe = pb.authStore.onChange(() => {
       setAuthenticated(pb.authStore.isValid);
     });
     return () => unsubscribe();
   }, []);
+
+  if (!authChecked) return null;
 
   if (!authenticated) {
     return <LoginForm onLogin={() => setAuthenticated(true)} />;
