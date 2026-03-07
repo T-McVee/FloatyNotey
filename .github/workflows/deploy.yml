@@ -29,6 +29,13 @@ jobs:
           chmod 600 ~/.ssh/deploy_key
           echo "${{ secrets.DEPLOY_HOST_KEY }}" >> ~/.ssh/known_hosts
 
+      - name: Debug SSH key
+        run: |
+          echo "Key file size: $(wc -c < ~/.ssh/deploy_key)"
+          echo "Key starts with: $(head -c 30 ~/.ssh/deploy_key)"
+          echo "Key line count: $(wc -l < ~/.ssh/deploy_key)"
+          ssh -vvv -i ~/.ssh/deploy_key -o BatchMode=yes ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} 'echo ok' 2>&1 | grep -E "Offering|Trying|Authentication|debug1 identity"
+
       - name: Deploy via rsync
         run: |
           rsync -avz --delete \
