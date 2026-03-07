@@ -6,7 +6,7 @@ FloatyNotey is a lightweight, always-available note-taking app inspired by Rayca
 
 The core notes experience is a **Progressive Web App** that runs on any device — personal Mac, work Mac, and iPhone — with real-time sync and full offline support. On macOS, a minimal native Swift shell wraps the PWA in a floating `NSPanel` with a global hotkey (`⌥ N`), preserving the instant, always-on-top experience. On iPhone, the PWA is installed directly to the home screen with no App Store involvement.
 
-On the backend, a **NanoClaw AI agent** runs in a Docker container on a Hetzner VPS, with read-only access to the user's notes via Supabase. It delivers scheduled daily digests, weekly reviews, and stale todo reminders via WhatsApp or Telegram, and responds to ad-hoc conversational queries about the user's notes — functioning as a true second brain.
+On the backend, a **NanoClaw AI agent** runs in a Docker container on a Hetzner VPS, with read-only access to the user's notes via PocketBase. It delivers scheduled daily digests, weekly reviews, and stale todo reminders via WhatsApp or Telegram, and responds to ad-hoc conversational queries about the user's notes — functioning as a true second brain.
 
 ## Tech Stack
 
@@ -34,7 +34,10 @@ On the backend, a **NanoClaw AI agent** runs in a Docker container on a Hetzner 
 - Ad-hoc queries via WhatsApp/Telegram
 
 ### Data Format
-- Plain Markdown with YAML frontmatter (`id`, `created`, `modified`, `pinned`, `device_origin`)
+- **Tiptap JSON** is the source of truth for note content, stored in IndexedDB (via Dexie.js) and synced to PocketBase
+- Note titles are derived from the first line of content (no separate title field)
+- **Markdown export** is a derived format for portability and AI agent consumption (export mechanism TBD)
+- Note metadata: `id`, `created`, `modified`, `pinned`, `device_origin`
 
 ### Development Tooling
 - **OpenSpec** — spec-driven planning and documentation (proposals, specs, change tracking)
@@ -56,7 +59,7 @@ On the backend, a **NanoClaw AI agent** runs in a Docker container on a Hetzner 
 - **Tiny native macOS shell** — Swift app loads PWA in floating `WKWebView` + `NSPanel`
 - **NanoClaw on Hetzner VPS** — ephemeral, sandboxed containers with read-only note access
 - **PocketBase hooks as the bridge** — NanoClaw can read the SQLite DB directly or consume exported `.md` files
-- **Offline-first** — local storage with sync to Supabase when online
+- **Offline-first** — local storage (IndexedDB via Dexie.js) with sync to PocketBase when online
 
 ### Testing Strategy
 - **Vitest** for unit and integration tests
@@ -71,8 +74,8 @@ On the backend, a **NanoClaw AI agent** runs in a Docker container on a Hetzner 
 
 ## Domain Context
 
-- **Notes** are the core entity — each note is a Markdown document with YAML frontmatter metadata
-- **Sync** must be seamless and conflict-free across personal Mac, work Mac, and iPhone
+- **Notes** are the core entity — each note is a Tiptap JSON document with associated metadata, exportable to Markdown
+- **Sync** must be seamless across personal Mac, work Mac, and iPhone (last-write-wins for single-user simplicity)
 - **Floating window** behavior on macOS is a key UX differentiator — always-on-top, instantly toggled with `⌥ N`
 - **AI digests** summarize and surface relevant notes proactively; the agent has read-only access and cannot modify notes
 - **PWA installation** on iPhone bypasses the App Store entirely — no developer fee, no review process
@@ -86,6 +89,23 @@ On the backend, a **NanoClaw AI agent** runs in a Docker container on a Hetzner 
 - **Privacy** — notes are personal; AI agent has read-only access in sandboxed containers
 - **iOS Safari limitations** — 7-day IndexedDB eviction means server-side sync (PocketBase) is essential, not optional
 - **Single user** — this is a personal tool, not a multi-tenant SaaS
+
+## Status
+
+### Built
+- **Tiptap editor** — rich text with bold, italic, strikethrough, code, headings, lists, task lists, blockquotes, code blocks, and link support (autolink, paste-to-link, inline link dialog)
+- **Note storage** — IndexedDB via Dexie.js; full CRUD (`createNote`, `getNote`, `updateNote`, `deleteNote`, `listNotes`, `searchNotes`); titles derived from first line of content
+- **Command palette** — Raycast-style `⌘K` overlay with search, note switching, create, delete (two-step confirmation), pin/unpin, and copy deep link
+- **History navigation** — session-scoped back/forward stacks (`⌘[` / `⌘]`)
+- **Deep links** — hash-based `#note/{id}`; internal links navigate in-app, external links open in browser
+- **macOS Swift shell** — floating `NSPanel` with `WKWebView`, global hotkey `⌥N`, Edit menu for clipboard support, `window.open()` delegation
+- **PWA setup** — Next.js + TypeScript, service worker, manifest, Apple Web App metadata for iOS home screen install
+
+### Roadmap
+- **PocketBase sync** — background sync layer between Dexie and self-hosted PocketBase; keeps notes consistent across devices; protects against iOS Safari 7-day IndexedDB eviction
+- **Markdown export** — derive Markdown from Tiptap JSON for portability and AI agent consumption
+- **NanoClaw AI agent** — scheduled digests (daily, weekly, stale todos) and ad-hoc queries via WhatsApp/Telegram; read-only access to notes via PocketBase
+- **PWA deployment** — host the PWA for cross-device access (currently dev-only on localhost)
 
 ## External Dependencies
 
