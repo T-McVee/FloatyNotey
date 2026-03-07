@@ -88,10 +88,14 @@ async function flushOfflineQueue(): Promise<void> {
 async function applyRemote(remote: PBNote): Promise<void> {
   const remoteModified = new Date(remote.Modified);
 
-  // Find local note by remoteId or LocalId
+  // Find local note by remoteId, or by LocalId for unsynced local notes only
   let local = await db.notes.where("remoteId").equals(remote.id).first();
   if (!local && remote.LocalId) {
-    local = await db.notes.get(Number(remote.LocalId));
+    const candidate = await db.notes.get(Number(remote.LocalId));
+    // Only match if this local note hasn't been linked to a different remote record
+    if (candidate && !candidate.remoteId) {
+      local = candidate;
+    }
   }
 
   if (local) {

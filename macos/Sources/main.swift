@@ -57,6 +57,12 @@ webView.uiDelegate = uiDelegate
 webView.autoresizingMask = [.width, .height]
 panel.contentView!.addSubview(webView)
 
+// Clear cached data so WKWebView picks up latest deployed PWA
+WKWebsiteDataStore.default().removeData(
+    ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(),
+    modifiedSince: .distantPast
+) {}
+
 let url = URL(string: "https://notes.tmcvee.com")!
 webView.load(URLRequest(url: url))
 
