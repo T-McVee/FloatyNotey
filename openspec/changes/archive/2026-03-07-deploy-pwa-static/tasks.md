@@ -1,7 +1,7 @@
 ## 1. Next.js Static Export Configuration
 - [x] 1.1 Add `output: 'export'` to `pwa/next.config.ts`
 - [x] 1.2 Verify build succeeds with `npm run build` and produces `pwa/out/` directory
-- [ ] 1.3 Test static output locally (e.g., `npx serve pwa/out`) to confirm the app works
+- [x] 1.3 Test static output locally (e.g., `npx serve pwa/out`) to confirm the app works
 
 ## 2. VPS Static File Hosting
 - [x] 2.1 Create deploy directory `/var/www/floatynotey/` on the VPS
@@ -19,11 +19,11 @@
 - [x] 4.1 Create `.github/workflows/deploy.yml` with trigger on push to `prod`
 - [x] 4.2 Workflow steps: checkout → setup Node → install deps → build → rsync to VPS
 - [x] 4.3 Scope build to `pwa/` directory (working-directory or path filter)
-- [ ] 4.4 Create `prod` branch from `main`
-- [ ] 4.5 Test workflow end-to-end by pushing to `prod`
+- [x] 4.4 Create `prod` branch from `main`
+- [x] 4.5 Test workflow end-to-end by pushing to `prod`
 
 ## 5. Verification
-- [ ] 5.1 Confirm `https://notes.tmcvee.com` loads the PWA
-- [ ] 5.2 Confirm service worker registers and caches assets
-- [ ] 5.3 Confirm PWA installable on iOS (Add to Home Screen)
-- [ ] 5.4 Confirm deep links work (`https://notes.tmcvee.com/#note/{id}`)
+- [x] 5.1 Confirm `https://notes.tmcvee.com` loads the PWA
+- [x] 5.2 Confirm service worker registers and caches assets
+- [x] 5.3 Confirm PWA installable on iOS (Add to Home Screen)
+- [x] 5.4 Confirm deep links work (`https://notes.tmcvee.com/#note/{id}`)

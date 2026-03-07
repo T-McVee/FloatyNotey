@@ -12,8 +12,10 @@ import { createNote, getNote, updateNote, deleteNote } from "@/lib/notes";
 import { migrateIfNeeded } from "@/lib/migrate";
 import { pushHistory, goBack, goForward } from "@/lib/history";
 import { isInternalNoteUrl, parseNoteHash } from "@/lib/deep-link";
+import pb from "@/lib/pb";
 import CommandPalette from "./command-palette";
 import Toolbar from "./toolbar";
+import LoginForm from "./login-form";
 
 const LAST_NOTE_KEY = "floatynotey:lastNote";
 const EMPTY_DOC = { type: "doc", content: [{ type: "paragraph" }] };
@@ -58,6 +60,7 @@ function LinkInput({
 }
 
 export default function Editor() {
+  const [authenticated, setAuthenticated] = useState(pb.authStore.isValid);
   const [ready, setReady] = useState(false);
   const [noteId, setNoteId] = useState<number | null>(null);
   const [paletteOpen, setPaletteOpen] = useState(false);
@@ -337,6 +340,18 @@ export default function Editor() {
     setLinkInput(null);
     editor?.commands.focus();
   }, [editor]);
+
+  // Listen for auth store changes (e.g. token expiry)
+  useEffect(() => {
+    const unsubscribe = pb.authStore.onChange(() => {
+      setAuthenticated(pb.authStore.isValid);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  if (!authenticated) {
+    return <LoginForm onLogin={() => setAuthenticated(true)} />;
+  }
 
   if (!ready) return null;
 

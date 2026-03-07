@@ -24,7 +24,11 @@
       "Bash(bd stats:*)",
       "Bash(bd dep:*)",
       "Bash(bd blocked:*)",
-      "Bash(bd ready:*)"
+      "Bash(bd ready:*)",
+      "Bash(bd close:*)",
+      "Bash(bd sync:*)",
+      "Bash(BEADS_DIR=/Users/tim/Documents/Codeing/Projects/FloatyNotey/.beads bd update:*)",
+      "Bash(bd:*)"
     ]
   }
 }

@@ -57,7 +57,7 @@ webView.uiDelegate = uiDelegate
 webView.autoresizingMask = [.width, .height]
 panel.contentView!.addSubview(webView)
 
-let url = URL(string: "http://localhost:3000")!
+let url = URL(string: "https://notes.tmcvee.com")!
 webView.load(URLRequest(url: url))
 
 panel.makeKeyAndOrderFront(nil)
