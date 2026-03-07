@@ -40,6 +40,9 @@ export async function migrateIfNeeded(): Promise<void> {
     created: now,
     modified: now,
     pinned: false,
+    remoteId: null,
+    syncedAt: null,
+    deleted: false,
   });
 
   localStorage.setItem(MIGRATED_KEY, "1");

@@ -1,4 +1,4 @@
-// @vitest-environment jsdom
+// @vitest-environment happy-dom
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { db } from "../db";
 import { migrateIfNeeded } from "../migrate";
@@ -52,6 +52,9 @@ describe("migrateIfNeeded", () => {
       created: new Date(),
       modified: new Date(),
       pinned: false,
+      remoteId: null,
+      syncedAt: null,
+      deleted: false,
     });
 
     await migrateIfNeeded();
