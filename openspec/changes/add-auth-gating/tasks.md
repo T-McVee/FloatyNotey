@@ -12,7 +12,7 @@
 - [x] 3.1 Update the URL from `http://localhost:3000` to `https://notes.tmcvee.com`
 
 ## 4. Verification
-- [ ] 4.1 Verify browser: login form appears on first visit, editor loads after login, refresh preserves session
-- [ ] 4.2 Verify iPhone: login with Keychain/Face ID auto-fill, installed PWA preserves session
-- [ ] 4.3 Verify Swift shell: loads production URL, login form works in WKWebView
-- [ ] 4.4 Verify token expiry: login form reappears after token invalidation
+- [x] 4.1 Verify browser: login form appears on first visit, editor loads after login, refresh preserves session
+- [x] 4.2 Verify iPhone: login with Keychain/Face ID auto-fill, installed PWA preserves session
+- [x] 4.3 Verify Swift shell: loads production URL, login form works in WKWebView
+- [x] 4.4 Verify token expiry: login form reappears after token invalidation
