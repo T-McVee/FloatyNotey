@@ -1,4 +1,5 @@
 import { db, type Note } from "./db";
+import { pushNote } from "./sync";
 
 /** Extract title from first text node of Tiptap JSON content. */
 export function deriveTitle(content: object): string {
@@ -12,12 +13,17 @@ export async function createNote(
   content?: object
 ): Promise<number> {
   const now = new Date();
-  return db.notes.add({
+  const id = await db.notes.add({
     content: content ?? { type: "doc", content: [{ type: "paragraph" }] },
     created: now,
     modified: now,
     pinned: false,
+    remoteId: null,
+    syncedAt: null,
+    deleted: false,
   } as Note);
+  pushNote(id);
+  return id;
 }
 
 export async function getNote(id: number): Promise<Note | undefined> {
@@ -29,15 +35,21 @@ export async function updateNote(
   changes: Partial<Pick<Note, "content" | "pinned">>
 ): Promise<void> {
   await db.notes.update(id, { ...changes, modified: new Date() });
+  pushNote(id);
 }
 
 export async function deleteNote(id: number): Promise<void> {
-  await db.notes.delete(id);
+  await db.notes.update(id, { deleted: true, modified: new Date() });
+  pushNote(id);
 }
 
-/** List all notes sorted by pinned (desc) then modified (desc). */
+/** List all non-deleted notes sorted by pinned (desc) then modified (desc). */
 export async function listNotes(): Promise<Note[]> {
-  const all = await db.notes.orderBy("modified").reverse().toArray();
+  const all = await db.notes
+    .orderBy("modified")
+    .reverse()
+    .filter((n) => !n.deleted)
+    .toArray();
   // Stable sort: pinned first
   return all.sort((a, b) => Number(b.pinned) - Number(a.pinned));
 }

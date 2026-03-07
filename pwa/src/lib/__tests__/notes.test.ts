@@ -77,11 +77,30 @@ describe("CRUD operations", () => {
     expect(note!.pinned).toBe(true);
   });
 
-  it("deletes a note", async () => {
+  it("soft-deletes a note (marks deleted, keeps in DB)", async () => {
     const id = await createNote(makeDoc("Delete me"));
     await deleteNote(id);
     const note = await getNote(id);
-    expect(note).toBeUndefined();
+    expect(note).toBeDefined();
+    expect(note!.deleted).toBe(true);
+  });
+
+  it("soft-deleted notes are excluded from listNotes", async () => {
+    const id1 = await createNote(makeDoc("Keep me"));
+    const id2 = await createNote(makeDoc("Delete me"));
+    await deleteNote(id2);
+    const notes = await listNotes();
+    expect(notes.length).toBe(1);
+    expect(notes[0].id).toBe(id1);
+  });
+
+  it("soft-deleted notes are excluded from searchNotes", async () => {
+    await createNote(makeDoc("Shopping list"));
+    const id2 = await createNote(makeDoc("Shopping ideas"));
+    await deleteNote(id2);
+    const results = await searchNotes("shopping");
+    expect(results.length).toBe(1);
+    expect(deriveTitle(results[0].content)).toBe("Shopping list");
   });
 });
 

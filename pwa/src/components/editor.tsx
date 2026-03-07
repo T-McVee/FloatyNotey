@@ -13,6 +13,7 @@ import { migrateIfNeeded } from "@/lib/migrate";
 import { pushHistory, goBack, goForward } from "@/lib/history";
 import { isInternalNoteUrl, parseNoteHash } from "@/lib/deep-link";
 import pb from "@/lib/pb";
+import { initSync } from "@/lib/sync";
 import CommandPalette from "./command-palette";
 import Toolbar from "./toolbar";
 import LoginForm from "./login-form";
@@ -187,6 +188,18 @@ export default function Editor() {
       cancelled = true;
     };
   }, [editor]);
+
+  // Start sync after editor is ready
+  useEffect(() => {
+    if (!ready) return;
+    let cleanup: (() => void) | undefined;
+    initSync().then((fn) => {
+      cleanup = fn;
+    });
+    return () => {
+      cleanup?.();
+    };
+  }, [ready]);
 
   // Global keyboard shortcuts
   useEffect(() => {
