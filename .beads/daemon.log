@@ -17043,3 +17043,10 @@ time=2026-03-08T06:27:33.116+10:00 level=INFO msg="JSONL content changed, procee
 time=2026-03-08T06:27:33.879+10:00 level=INFO msg="Pulled from remote"
 time=2026-03-08T06:27:33.893+10:00 level=INFO msg="Imported from JSONL"
 time=2026-03-08T06:27:33.896+10:00 level=INFO msg="Auto-import complete"
+time=2026-03-08T06:29:14.588+10:00 level=INFO msg="Git ref change detected: %s" !BADKEY=/Users/tim/Documents/Codeing/Projects/FloatyNotey/.git/refs/heads/main.lock
+time=2026-03-08T06:29:15.591+10:00 level=INFO msg="Import triggered by file change"
+time=2026-03-08T06:29:15.592+10:00 level=INFO msg="Starting %s..." !BADKEY=auto-import
+time=2026-03-08T06:29:15.594+10:00 level=INFO msg="JSONL content changed, proceeding with %s..." !BADKEY=auto-import
+time=2026-03-08T06:29:16.248+10:00 level=INFO msg="Pulled from remote"
+time=2026-03-08T06:29:16.261+10:00 level=INFO msg="Imported from JSONL"
+time=2026-03-08T06:29:16.262+10:00 level=INFO msg="Auto-import complete"
