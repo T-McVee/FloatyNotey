@@ -86,7 +86,8 @@ async function flushOfflineQueue(): Promise<void> {
 
 /** Apply a remote PB record to local Dexie using LWW on Modified. */
 async function applyRemote(remote: PBNote): Promise<void> {
-  const remoteModified = new Date(remote.Modified);
+  // PocketBase returns dates as "YYYY-MM-DD HH:mm:ss.SSSZ" — normalize to ISO 8601
+  const remoteModified = new Date(remote.Modified.replace(" ", "T"));
 
   // Find local note by remoteId, or by LocalId for unsynced local notes only
   let local = await db.notes.where("remoteId").equals(remote.id).first();
