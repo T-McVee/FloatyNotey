@@ -29,4 +29,4 @@
 ## 6. Testing
 - [x] 6.1 Unit tests for push, pull, LWW conflict resolution, offline queue
 - [x] 6.2 Verify soft-delete filtering in listNotes/searchNotes
-- [ ] 6.3 End-to-end manual test: create/edit/delete note, verify PocketBase sync
+- [x] 6.3 End-to-end manual test: create/edit/delete note, verify PocketBase sync

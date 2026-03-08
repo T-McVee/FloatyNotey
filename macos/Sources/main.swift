@@ -47,6 +47,19 @@ class WebUIDelegate: NSObject, WKUIDelegate {
         }
         return nil
     }
+
+    func webView(
+        _ webView: WKWebView,
+        runJavaScriptAlertPanelWithMessage message: String,
+        initiatedByFrame frame: WKFrameInfo,
+        completionHandler: @escaping () -> Void
+    ) {
+        let alert = NSAlert()
+        alert.messageText = message
+        alert.addButton(withTitle: "OK")
+        alert.runModal()
+        completionHandler()
+    }
 }
 
 let uiDelegate = WebUIDelegate()
@@ -55,13 +68,8 @@ let uiDelegate = WebUIDelegate()
 let webView = WKWebView(frame: panel.contentView!.bounds)
 webView.uiDelegate = uiDelegate
 webView.autoresizingMask = [.width, .height]
+webView.isInspectable = true
 panel.contentView!.addSubview(webView)
-
-// Clear cached data so WKWebView picks up latest deployed PWA
-WKWebsiteDataStore.default().removeData(
-    ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(),
-    modifiedSince: .distantPast
-) {}
 
 let url = URL(string: "https://notes.tmcvee.com")!
 webView.load(URLRequest(url: url))
