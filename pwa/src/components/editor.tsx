@@ -189,9 +189,9 @@ export default function Editor() {
     };
   }, [editor]);
 
-  // Start sync after editor is ready
+  // Start sync after editor is ready and user is authenticated
   useEffect(() => {
-    if (!ready) return;
+    if (!ready || !authenticated) return;
     let cleanup: (() => void) | undefined;
     initSync().then((fn) => {
       cleanup = fn;
@@ -199,7 +199,7 @@ export default function Editor() {
     return () => {
       cleanup?.();
     };
-  }, [ready]);
+  }, [ready, authenticated]);
 
   // Global keyboard shortcuts
   useEffect(() => {

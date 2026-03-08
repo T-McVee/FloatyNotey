@@ -128,8 +128,6 @@ async function applyRemote(remote: PBNote): Promise<void> {
 async function pullFromRemote(): Promise<void> {
   try {
     const records = await pb.collection("Notes").getFullList<PBNote>();
-    // DEBUG: temporary alert to diagnose sync issues
-    alert(`[sync] pulled ${records.length} records. First keys: ${JSON.stringify(Object.keys(records[0] ?? {}))}`);
     for (const record of records) {
       await applyRemote(record);
     }
@@ -141,7 +139,6 @@ async function pullFromRemote(): Promise<void> {
     }
   } catch (err) {
     console.error("[sync] pull failed", err);
-    alert(`[sync] pull failed: ${err}`);
   }
 }
 
