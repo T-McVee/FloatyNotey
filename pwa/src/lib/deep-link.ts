@@ -1,19 +1,36 @@
 const NOTE_HASH_PREFIX = "#note/";
+const REMOTE_ID_PREFIX = "r:";
 
-export function buildNoteLink(noteId: number): string {
-  return `${window.location.origin}/${NOTE_HASH_PREFIX}${noteId}`;
+export type NoteRef =
+  | { kind: "local"; localId: number }
+  | { kind: "remote"; remoteId: string };
+
+export function buildNoteLink(
+  localId: number,
+  remoteId?: string,
+): string {
+  const idPart = remoteId
+    ? `${REMOTE_ID_PREFIX}${remoteId}`
+    : String(localId);
+  return `${window.location.origin}/${NOTE_HASH_PREFIX}${idPart}`;
 }
 
-export function parseNoteHash(hash: string): number | null {
+export function parseNoteHash(hash: string): NoteRef | null {
   if (!hash.startsWith(NOTE_HASH_PREFIX)) return null;
-  const id = parseInt(hash.slice(NOTE_HASH_PREFIX.length), 10);
-  return Number.isFinite(id) && id > 0 ? id : null;
+  const rest = hash.slice(NOTE_HASH_PREFIX.length);
+
+  if (rest.startsWith(REMOTE_ID_PREFIX)) {
+    const remoteId = rest.slice(REMOTE_ID_PREFIX.length);
+    return remoteId ? { kind: "remote", remoteId } : null;
+  }
+
+  const id = parseInt(rest, 10);
+  return Number.isFinite(id) && id > 0 ? { kind: "local", localId: id } : null;
 }
 
-export function isInternalNoteUrl(url: string): number | null {
+export function isInternalNoteUrl(url: string): NoteRef | null {
   try {
     const parsed = new URL(url);
-    if (parsed.origin !== window.location.origin) return null;
     return parseNoteHash(parsed.hash);
   } catch {
     if (url.startsWith(NOTE_HASH_PREFIX)) return parseNoteHash(url);

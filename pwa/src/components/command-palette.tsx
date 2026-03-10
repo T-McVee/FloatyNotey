@@ -32,6 +32,7 @@ export default function CommandPalette({
   const inputRef = useRef<HTMLInputElement>(null);
 
   const notes = useLiveQuery(() => listNotes(), []) ?? [];
+  const currentNote = notes.find((n) => n.id === currentNoteId);
 
   const filtered = query
     ? notes.filter((n) =>
@@ -90,7 +91,9 @@ export default function CommandPalette({
             onClose();
           } else if (item.kind === "copy-link") {
             if (currentNoteId != null) {
-              navigator.clipboard.writeText(buildNoteLink(currentNoteId));
+              navigator.clipboard.writeText(
+                buildNoteLink(currentNoteId, currentNote?.remoteId ?? undefined),
+              );
             }
             onClose();
           } else {
@@ -167,7 +170,9 @@ export default function CommandPalette({
                   onMouseEnter={() => setSelectedIndex(i)}
                   onClick={() => {
                     if (currentNoteId != null) {
-                      navigator.clipboard.writeText(buildNoteLink(currentNoteId));
+                      navigator.clipboard.writeText(
+                        buildNoteLink(currentNoteId, currentNote?.remoteId ?? undefined),
+                      );
                     }
                     onClose();
                   }}

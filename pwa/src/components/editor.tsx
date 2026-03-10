@@ -8,10 +8,20 @@ import TaskItem from "@tiptap/extension-task-item";
 import CodeBlock from "@tiptap/extension-code-block";
 import Link from "@tiptap/extension-link";
 import { db } from "@/lib/db";
-import { createNote, getNote, updateNote, deleteNote } from "@/lib/notes";
+import {
+  createNote,
+  getNote,
+  getNoteByRemoteId,
+  updateNote,
+  deleteNote,
+} from "@/lib/notes";
 import { migrateIfNeeded } from "@/lib/migrate";
 import { pushHistory, goBack, goForward } from "@/lib/history";
-import { isInternalNoteUrl, parseNoteHash } from "@/lib/deep-link";
+import {
+  isInternalNoteUrl,
+  parseNoteHash,
+  type NoteRef,
+} from "@/lib/deep-link";
 import pb from "@/lib/pb";
 import { initSync } from "@/lib/sync";
 import CommandPalette from "./command-palette";
@@ -20,6 +30,13 @@ import LoginForm from "./login-form";
 
 const LAST_NOTE_KEY = "floatynotey:lastNote";
 const EMPTY_DOC = { type: "doc", content: [{ type: "paragraph" }] };
+
+async function resolveNoteRef(
+  ref: NoteRef,
+): Promise<import("@/lib/db").Note | undefined> {
+  if (ref.kind === "local") return getNote(ref.localId);
+  return getNoteByRemoteId(ref.remoteId);
+}
 
 function LinkInput({
   top,
@@ -142,9 +159,9 @@ export default function Editor() {
       await migrateIfNeeded();
 
       // Check for deep link in URL hash
-      const hashNoteId = parseNoteHash(window.location.hash);
-      if (hashNoteId) {
-        const note = await getNote(hashNoteId);
+      const hashRef = parseNoteHash(window.location.hash);
+      if (hashRef) {
+        const note = await resolveNoteRef(hashRef);
         if (note && !cancelled) {
           editor.commands.setContent(note.content);
           setNoteId(note.id);
@@ -263,9 +280,11 @@ export default function Editor() {
       if (!href) return;
       e.preventDefault();
       e.stopPropagation();
-      const targetNoteId = isInternalNoteUrl(href);
-      if (targetNoteId !== null) {
-        handleSelectNoteRef.current?.(targetNoteId);
+      const targetRef = isInternalNoteUrl(href);
+      if (targetRef !== null) {
+        resolveNoteRef(targetRef).then((note) => {
+          if (note) handleSelectNoteRef.current?.(note.id);
+        });
       } else {
         window.open(href, "_blank", "noopener,noreferrer");
       }
@@ -277,10 +296,14 @@ export default function Editor() {
   // Listen for hash changes (e.g. deep link pasted into address bar)
   useEffect(() => {
     const onHashChange = () => {
-      const id = parseNoteHash(window.location.hash);
-      if (id !== null) {
-        handleSelectNote(id);
-        history.replaceState(null, "", window.location.pathname);
+      const ref = parseNoteHash(window.location.hash);
+      if (ref !== null) {
+        resolveNoteRef(ref).then((note) => {
+          if (note) {
+            handleSelectNote(note.id);
+            history.replaceState(null, "", window.location.pathname);
+          }
+        });
       }
     };
     window.addEventListener("hashchange", onHashChange);

@@ -30,6 +30,12 @@ export async function getNote(id: number): Promise<Note | undefined> {
   return db.notes.get(id);
 }
 
+export async function getNoteByRemoteId(
+  remoteId: string,
+): Promise<Note | undefined> {
+  return db.notes.where("remoteId").equals(remoteId).first();
+}
+
 export async function updateNote(
   id: number,
   changes: Partial<Pick<Note, "content" | "pinned">>
